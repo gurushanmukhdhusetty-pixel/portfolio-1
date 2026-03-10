@@ -82,6 +82,469 @@
             box-shadow: 0 0 30px rgba(0, 242, 255, 0.05);
         }
         
+        #neural-core, .bg-geometric {
+            filter: drop-shadow(0 0 25px rgba(0, 242, 255, 0.15));
+            width: 100%;
+            height: auto;
+            pointer-events: none;
+        }
+
+        .pulse { animation: pulse 5s infinite ease-in-out; }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .spin-slow { animation: spin 45s linear infinite; }
+        .spin-reverse { animation: spin 30s linear infinite reverse; }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .mega-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2rem, 8.5vw, 8rem);
+            line-height: 1.1;
+            letter-spacing: 0.02em;
+            font-weight: 700;
+        }
+
+        /* Clean White SD Logo */
+        .sd-logo {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            color: #ffffff;
+        }
+
+        .ticker-font {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+        }
+
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.01);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            padding: 30px 0;
+            margin: 80px 0 20px 0;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            animation: scroll 30s linear infinite;
+            text-transform: uppercase;
+            font-size: clamp(1.2rem, 3.5vw, 3.5rem);
+            color: rgba(255, 255, 255, 0.08);
+            letter-spacing: 0.1em;
+        }
+
+        @keyframes scroll {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 10px; }
+
+        .nav-pill {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border);
+        }
+
+        section { width: 100%; overflow: hidden; position: relative; }
+    </style>
+</head>
+<body class="selection:bg-cyan-500 selection:text-black">
+
+    <!-- Animated Stream Background -->
+    <div class="data-stream" id="stream-container"></div>
+    <div class="fixed inset-0 hero-gradient -z-10"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-4 md:top-6 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-5xl">
+        <div class="nav-pill px-5 md:px-8 py-3 md:py-4 flex justify-between items-center rounded-full">
+            <div class="sd-logo text-xl md:text-2xl">SD</div>
+            <div class="flex gap-4 md:gap-8 items-center">
+                <a href="#about" class="text-[9px] md:text-[11px] uppercase tracking-[0.2em] font-bold hover:text-cyan-400 transition-colors hidden sm:block">Strategy</a>
+                <a href="#experience" class="text-[9px] md:text-[11px] uppercase tracking-[0.2em] font-bold hover:text-cyan-400 transition-colors">Work</a>
+                <a href="#writings" class="text-[9px] md:text-[11px] uppercase tracking-[0.2em] font-bold hover:text-cyan-400 transition-colors hidden xs:block">Writings</a>
+                <a href="mailto:gurushanmukhdhusetty@gmail.com" class="bg-white text-black px-4 md:px-6 py-1.5 md:py-2 rounded-full text-[9px] md:text-[11px] font-black uppercase hover:bg-cyan-400 transition-all">Connect</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="min-h-screen flex flex-col justify-center items-center px-4 md:px-6 pt-24 pb-20 relative overflow-hidden text-center">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-20 opacity-35 md:opacity-30 w-[120%] md:w-full flex justify-center">
+            <svg id="neural-core" viewBox="0 0 200 200" class="max-w-[600px]">
+                <circle cx="100" cy="100" r="90" stroke="#00f2ff" stroke-width="0.1" fill="none" class="spin-slow" />
+                <circle cx="100" cy="100" r="70" stroke="#ffffff" stroke-width="0.05" fill="none" class="spin-slow" style="animation-direction: reverse;" />
+                <g class="pulse">
+                    <circle cx="100" cy="100" r="12" fill="#00f2ff" />
+                    <circle cx="100" cy="100" r="30" stroke="#00f2ff" stroke-width="0.3" fill="none" />
+                </g>
+            </svg>
+        </div>
+
+        <div class="sd-logo text-[22vw] md:text-[12vw] opacity-10 mb-4 md:mb-8 select-none leading-none">SD</div>
+        <p class="text-cyan-400 font-bold tracking-[0.3em] md:tracking-[0.5em] mb-4 md:mb-6 uppercase text-[10px] md:text-xs">Strategist • Builder • Operator</p>
+        
+        <h1 class="mega-title mb-6 md:mb-10 text-white uppercase">
+            SHANMUKH<br><span class="text-cyan-400">DHUSETTY</span>
+        </h1>
+        
+        <p class="text-white/40 max-w-xl text-[11px] md:text-base leading-relaxed mb-10 md:mb-12 uppercase tracking-[0.1em] md:tracking-widest font-light px-4 mx-auto text-balance">
+            Building startup systems and documenting the evolution of global business architecture.
+        </p>
+
+        <div class="flex flex-wrap justify-center gap-3 md:gap-4">
+            <a href="mailto:gurushanmukhdhusetty@gmail.com" class="glass-card px-6 md:px-8 py-3 md:py-3.5 flex items-center gap-3">
+                <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest">Email</span>
+            </a>
+            <a href="https://www.linkedin.com/in/shanmukh-dhusetty" target="_blank" class="glass-card px-6 md:px-8 py-3 md:py-3.5 flex items-center gap-3">
+                <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest">LinkedIn</span>
+            </a>
+            <a href="tel:9542762385" class="glass-card px-6 md:px-8 py-3 md:py-3.5 flex items-center gap-3">
+                <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest">Direct</span>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Strategy Section -->
+        <section id="about" class="max-w-7xl mx-auto px-5 md:px-6 py-16 md:py-32 text-left">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-12 items-start">
+                <div class="lg:col-span-7 space-y-8 md:space-y-10">
+                    <div class="sd-logo text-4xl md:text-5xl opacity-20">SD</div>
+                    <h2 class="text-3xl md:text-6xl font-extrabold tracking-tighter leading-[1.1] md:leading-tight italic">Business Architect & <br class="hidden md:block"><span class="text-cyan-400">Venture Strategist</span></h2>
+                    <div class="space-y-6 text-base md:text-lg text-white/60 font-light leading-relaxed">
+                        <p>
+                            I work at the intersection of strategy and operations to build systems for scale. I focus on translating complexity into actionable growth, specializing in structural logic for early-stage ventures.
+                        </p>
+                        <p>
+                            My approach is defined by <strong>substance over hype</strong>. I prioritize structural integrity and operational flow over temporary market noise, ensuring that systems are built to support sustainable execution.
+                        </p>
+                        <p>
+                            I work with founders to navigate the transition from zero to one, architecting GTM strategies and internal frameworks that provide long-term stability in the global venture ecosystem.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-5 flex flex-col gap-6 lg:pt-32">
+                    <div class="glass-card p-7 md:p-10 bg-cyan-400/5 cursor-default">
+                        <h3 class="text-[10px] md:text-xs font-black text-cyan-400 uppercase tracking-[0.3em] mb-6">Core Focus</h3>
+                        <ul class="text-xs md:text-sm space-y-4 md:space-y-5 text-white/70 font-bold uppercase tracking-wider">
+                            <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 bg-cyan-400 rounded-full"></span> Startup Infrastructure</li>
+                            <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 bg-cyan-400 rounded-full"></span> Operational Logic</li>
+                            <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 bg-cyan-400 rounded-full"></span> Efficiency Engineering</li>
+                            <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 bg-cyan-400 rounded-full"></span> Business Architecture</li>
+                        </ul>
+                    </div>
+                    <div class="glass-card p-7 md:p-10 cursor-default text-left">
+                        <div class="sd-logo text-xl md:text-2xl opacity-40 mb-4">SD</div>
+                        <h3 class="text-[10px] md:text-xs font-black text-white uppercase tracking-[0.3em] mb-4">The Methodology</h3>
+                        <p class="text-xs md:text-sm text-white/40 font-light leading-relaxed">
+                            Resilient architecture and predictable execution. I believe systems should simplify scaling, not complicate it.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Morphius AI Focus -->
+        <section id="mission" class="max-w-7xl mx-auto px-5 md:px-6 py-16 md:py-32 border-t border-white/5 bg-gradient-to-b from-transparent to-cyan-950/10">
+            <div class="max-w-4xl text-left space-y-10">
+                <div class="space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-[1px] bg-cyan-400"></div>
+                        <p class="text-cyan-400 font-bold tracking-[0.3em] uppercase text-[10px]">Current Initiative</p>
+                    </div>
+                    <h2 class="text-4xl md:text-7xl font-extrabold tracking-tighter italic text-left leading-[1.1]">Engineering <br><span class="text-cyan-400">Execution</span></h2>
+                    <div class="space-y-6 text-lg md:text-xl text-white/60 font-light leading-relaxed">
+                        <p>
+                            At <span class="text-white font-bold">Morphius AI</span> we engineer the digital infrastructure that drives modern growth. We transform complex data into clear pathways for execution.
+                        </p>
+                        <p>
+                            As Chief Operating Officer, my focus is on future-ready architecture. We build systems that enhance decision-making and operational precision, maintaining strategic judgment without unnecessary friction.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <!-- Subtle background accent -->
+            <div class="absolute -right-20 top-1/2 -translate-y-1/2 -z-10 opacity-5">
+                <svg class="bg-geometric w-96 md:w-[600px] spin-reverse" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="48" stroke="#00f2ff" stroke-width="0.1" fill="none" />
+                    <circle cx="50" cy="50" r="35" stroke="#ffffff" stroke-width="0.05" fill="none" />
+                </svg>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section id="experience" class="max-w-7xl mx-auto px-5 md:px-6 py-16 md:py-32 border-t border-white/5 relative">
+            <div class="absolute -left-20 top-0 -z-10 opacity-5">
+                <svg class="bg-geometric w-64 md:w-[400px] spin-slow" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" stroke="#00f2ff" stroke-width="0.1" fill="none" />
+                    <path d="M50 5 L50 95 M5 50 L95 50" stroke="#00f2ff" stroke-width="0.05" />
+                </svg>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-baseline mb-12 md:mb-20 gap-4 text-left">
+                <h2 class="text-4xl md:text-5xl font-extrabold tracking-tighter uppercase leading-none">Key <br class="hidden md:block">Engagements</h2>
+                <p class="text-[10px] md:text-xs text-white/30 uppercase tracking-[0.5em]">Portfolio</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+                <!-- Morphius AI -->
+                <div class="glass-card highlight-card p-8 md:p-10 flex flex-col justify-between h-full min-h-[300px] md:min-h-[420px] cursor-default text-left">
+                    <div>
+                        <p class="text-[10px] font-bold text-cyan-400 uppercase tracking-widest mb-6">Operations & Strategy</p>
+                        <h3 class="text-2xl md:text-3xl font-bold mb-4 text-cyan-400">Morphius AI</h3>
+                        <p class="text-white/70 text-sm md:text-base font-light leading-relaxed">
+                            Leading business operations and strategy. Focused on structured growth and scalable operational flows.
+                        </p>
+                    </div>
+                    <div class="mt-10 md:mt-12 flex justify-between items-center text-[9px] md:text-[10px] font-black uppercase text-cyan-400/40 pt-4 border-t border-white/5">
+                        <span>Chief of Operations</span>
+                        <span>Active</span>
+                    </div>
+                </div>
+
+                <!-- Trenovic Films -->
+                <div class="glass-card p-8 md:p-10 flex flex-col justify-between h-full min-h-[300px] md:min-h-[420px] cursor-default text-left">
+                    <div>
+                        <p class="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-6">Operational Architecture</p>
+                        <h3 class="text-2xl md:text-3xl font-bold mb-4">Trenovic Films</h3>
+                        <p class="text-white/50 text-sm md:text-base font-light leading-relaxed">
+                            Operational infrastructure and team modeling. Managing networks to facilitate cross-functional efficiency.
+                        </p>
+                    </div>
+                    <div class="mt-10 md:mt-12 flex justify-between items-center text-[9px] md:text-[10px] font-black uppercase text-white/20 pt-4 border-t border-white/5">
+                        <span>Head of Operations</span>
+                        <span>2024 — 2025</span>
+                    </div>
+                </div>
+
+                <!-- Markroom Studios -->
+                <div class="glass-card p-8 md:p-10 flex flex-col justify-between h-full min-h-[300px] md:min-h-[420px] cursor-default text-left">
+                    <div>
+                        <p class="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-6">Systems Management</p>
+                        <h3 class="text-2xl md:text-3xl font-bold mb-4">Markroom Studios</h3>
+                        <p class="text-white/50 text-sm md:text-base font-light leading-relaxed">
+                            Operational restructuring and revenue diversification. Designing scalable structures for stability.
+                        </p>
+                    </div>
+                    <div class="mt-10 md:mt-12 flex justify-between items-center text-[9px] md:text-[10px] font-black uppercase text-white/20 pt-4 border-t border-white/5">
+                        <span>Head Management</span>
+                        <span>2024 — 2025</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Thought Leadership Section -->
+        <section id="writings" class="max-w-7xl mx-auto px-5 md:px-6 py-16 md:py-32 border-t border-white/5 relative">
+            <div class="absolute right-10 bottom-0 -z-10 opacity-5">
+                <svg class="bg-geometric w-48 md:w-[300px] spin-reverse" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="40" stroke="#00f2ff" stroke-width="0.1" fill="none" />
+                    <circle cx="50" cy="50" r="20" stroke="#ffffff" stroke-width="0.05" fill="none" />
+                </svg>
+            </div>
+
+            <div class="flex flex-col md:flex-row justify-between items-baseline mb-12 md:mb-20 gap-4 text-left">
+                <h2 class="text-4xl md:text-5xl font-extrabold tracking-tighter uppercase italic leading-none">The Writer</h2>
+                <p class="text-[10px] md:text-xs text-white/30 uppercase tracking-[0.5em]">Analysis</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                <a href="https://www.linkedin.com/in/shanmukh-dhusetty/recent-activity/all/" target="_blank" class="glass-card p-8 md:p-10 border-cyan-400/20 bg-cyan-400/5 group text-left">
+                    <p class="text-[10px] font-bold text-cyan-400 uppercase tracking-widest mb-4">Strategic Logic</p>
+                    <h3 class="text-xl md:text-2xl font-bold mb-4 group-hover:text-cyan-400 transition-colors">Market Architecture and Asset Evaluation</h3>
+                    <p class="text-white/50 text-sm md:text-base font-light leading-relaxed mb-8">
+                        Analyzing how industry shifts reset partnership evaluations and move towards structural necessity.
+                    </p>
+                    <div class="flex items-center justify-between text-[9px] md:text-[10px] font-bold text-white/40 uppercase tracking-widest pt-4 border-t border-white/5">
+                        <span>View Insights</span>
+                        <span class="text-cyan-400">LinkedIn →</span>
+                    </div>
+                </a>
+                
+                <a href="https://www.linkedin.com/in/shanmukh-dhusetty/recent-activity/all/" target="_blank" class="glass-card p-8 md:p-10 border-white/10 group text-left">
+                    <p class="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Trade Dynamics</p>
+                    <h3 class="text-xl md:text-2xl font-bold mb-4 group-hover:text-cyan-400 transition-colors">The Future of Digital Infrastructure</h3>
+                    <p class="text-white/50 text-sm md:text-base font-light leading-relaxed mb-8">
+                        Analyzing trade agreements and global value chains as indicators of market confidence.
+                    </p>
+                    <div class="flex items-center justify-between text-[9px] md:text-[10px] font-bold text-white/40 uppercase tracking-widest pt-4 border-t border-white/5">
+                        <span>Read Analysis</span>
+                        <span class="text-cyan-400">LinkedIn →</span>
+                    </div>
+                </a>
+
+                <a href="https://www.linkedin.com/in/shanmukh-dhusetty/recent-activity/all/" target="_blank" class="glass-card p-8 md:p-10 border-white/10 group text-left">
+                    <p class="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Mindset</p>
+                    <h3 class="text-xl md:text-2xl font-bold mb-4 group-hover:text-cyan-400 transition-colors">Adapting to Disruptive Innovation</h3>
+                    <p class="text-white/50 text-sm md:text-base font-light leading-relaxed mb-8">
+                        Agility as a survival imperative. Lessons from industry titans on embracing evolution.
+                    </p>
+                    <div class="flex items-center justify-between text-[9px] md:text-[10px] font-bold text-white/40 uppercase tracking-widest pt-4 border-t border-white/5">
+                        <span>Read Insights</span>
+                        <span class="text-cyan-400">LinkedIn →</span>
+                    </div>
+                </a>
+
+                <a href="https://www.linkedin.com/in/shanmukh-dhusetty/recent-activity/all/" target="_blank" class="glass-card p-8 md:p-10 border-white/10 group text-left">
+                    <p class="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-4">Systems Logic</p>
+                    <h3 class="text-xl md:text-2xl font-bold mb-4 group-hover:text-cyan-400 transition-colors">Technology as an Operational Asset</h3>
+                    <p class="text-white/50 text-sm md:text-base font-light leading-relaxed mb-8">
+                        Technology as a sharpening tool for business thinking and overriding friction to drive scale.
+                    </p>
+                    <div class="flex items-center justify-between text-[9px] md:text-[10px] font-bold text-white/40 uppercase tracking-widest pt-4 border-t border-white/5">
+                        <span>Read Strategic Brief</span>
+                        <span class="text-cyan-400">LinkedIn →</span>
+                    </div>
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Marquee Ticker -->
+    <div class="marquee-container">
+        <div class="marquee-content ticker-font">
+            Shanmukh Dhusetty • Business Architect & Venture Strategist •&nbsp;
+            Shanmukh Dhusetty • Business Architect & Venture Strategist •&nbsp;
+            Shanmukh Dhusetty • Business Architect & Venture Strategist •&nbsp;
+            Shanmukh Dhusetty • Business Architect & Venture Strategist •&nbsp;
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="max-w-7xl mx-auto px-5 md:px-6 py-20 md:py-32 text-center">
+        <div class="flex flex-col items-center gap-10 md:gap-16">
+            <div class="sd-logo text-[18vw] md:text-[8vw] opacity-10 leading-none select-none">SD</div>
+            
+            <div class="flex flex-col md:flex-row gap-8 md:gap-16 items-center text-[10px] md:text-xs font-black uppercase tracking-[0.4em] text-white/30">
+                <a href="mailto:gurushanmukhdhusetty@gmail.com" class="hover:text-cyan-400 transition-colors py-2">Email</a>
+                <span class="hidden md:block opacity-20">•</span>
+                <a href="https://www.linkedin.com/in/shanmukh-dhusetty" target="_blank" class="hover:text-cyan-400 transition-colors py-2">LinkedIn</a>
+                <span class="hidden md:block opacity-20">•</span>
+                <a href="tel:9542762385" class="hover:text-cyan-400 transition-colors py-2">Direct</a>
+            </div>
+
+            <div class="pt-12 md:pt-16 border-t border-white/5 w-full flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-[9px] md:text-[10px] text-white/10 uppercase tracking-[0.6em] md:tracking-[0.8em]">Shanmukh Dhusetty</p>
+                <p class="text-[9px] md:text-[10px] text-white/10 uppercase tracking-[0.6em] md:tracking-[0.8em]">Hyderabad • 2025</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const streamContainer = document.getElementById('stream-container');
+        const streamColors = ['#00f2ff', '#ffffff', '#007788'];
+        
+        function createStream() {
+            const line = document.createElement('div');
+            line.className = 'stream-line';
+            line.style.left = Math.random() * 100 + 'vw';
+            line.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            line.style.opacity = Math.random() * 0.5;
+            line.style.background = `linear-gradient(to bottom, transparent, ${streamColors[Math.floor(Math.random()*streamColors.length)]}, transparent)`;
+            streamContainer.appendChild(line);
+            setTimeout(() => line.remove(), 10000);
+        }
+
+        for(let i=0; i<8; i++) {
+            setTimeout(createStream, Math.random() * 5000);
+        }
+        setInterval(createStream, 2500);
+
+        const core = document.querySelector('#neural-core');
+        const geoms = document.querySelectorAll('.bg-geometric');
+        
+        window.addEventListener('mousemove', (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 40;
+            const y = (e.clientY / window.innerHeight - 0.5) * 40;
+            if(core) core.style.transform = `translate(${x}px, ${y}px)`;
+            geoms.forEach(g => {
+                g.style.transform = `translate(${x * 0.5}px, ${y * 0.5}px)`;
+            });
+        });
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = "1";
+                    entry.target.style.transform = "translateY(0)";
+                }
+            });
+        }, { threshold: 0.05 });
+
+        window.onload = () => {
+            document.querySelectorAll('.glass-card, h2, h1, p, .sd-logo').forEach(el => {
+                el.style.opacity = "0";
+                el.style.transform = "translateY(20px)";
+                el.style.transition = "all 0.8s cubic-bezier(0.23, 1, 0.32, 1)";
+                observer.observe(el);
+            });
+        };
+    </script>
+</body>
+</html>            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -5;
+            opacity: 0.15;
+        }
+
+        .stream-line {
+            position: absolute;
+            background: linear-gradient(to bottom, transparent, var(--accent), transparent);
+            width: 1px;
+            height: 150px;
+            animation: stream-down 8s infinite linear;
+        }
+
+        @keyframes stream-down {
+            0% { transform: translateY(-200px); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(110vh); opacity: 0; }
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            display: block;
+        }
+
+        @media (min-width: 768px) {
+            .glass-card { border-radius: 32px; }
+        }
+
+        .glass-card:hover {
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateY(-8px);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.8);
+        }
+
+        .highlight-card {
+            background: rgba(0, 242, 255, 0.04);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.05);
+        }
+        
         #neural-core {
             filter: drop-shadow(0 0 25px rgba(0, 242, 255, 0.3));
             width: 100%;
@@ -962,4 +1425,5 @@
     </script>
 </body>
 </html>
+
 
