@@ -3,12 +3,21 @@ import { getDb } from './db.js';
 import { TABLES, isJsonCol, snapshotSql, type TableName } from './schema.js';
 import { clearCookie, isAuthed, passwordMatches, sessionCookie } from './auth.js';
 import { deleteFile, readFile, storageMode, uploadToken, writeLocalFile } from './storage.js';
+import * as passkeys from './passkeys.js';
+import * as push from './push.js';
+import { composeBriefing } from './briefing.js';
 
-const json = (data: unknown, status = 200, headers: Record<string, string> = {}) =>
-  new Response(JSON.stringify(data), {
-    status,
-    headers: { 'content-type': 'application/json', 'cache-control': 'no-store', ...headers },
-  });
+const json = (data: unknown, status = 200, extra: Record<string, string> = {}, cookies: string[] = []) => {
+  const h = new Headers({ 'content-type': 'application/json', 'cache-control': 'no-store', ...extra });
+  for (const c of cookies) h.append('set-cookie', c);
+  return new Response(JSON.stringify(data), { status, headers: h });
+};
+const device = (req: Request) => {
+  const ua = req.headers.get('user-agent') ?? '';
+  const os = /iPhone/.test(ua) ? 'iPhone' : /iPad/.test(ua) ? 'iPad' : /Android/.test(ua) ? 'Android' : /Mac OS X/.test(ua) ? 'Mac' : /Windows/.test(ua) ? 'Windows' : 'Device';
+  const br = /Edg\//.test(ua) ? 'Edge' : /CriOS|Chrome\//.test(ua) ? 'Chrome' : /FxiOS|Firefox\//.test(ua) ? 'Firefox' : /Safari\//.test(ua) ? 'Safari' : 'Browser';
+  return `${os} · ${br}`;
+};
 
 type Op =
   | { op: 'insert'; table: string; row: Record<string, unknown> }
@@ -75,6 +84,30 @@ export async function handle(req: Request): Promise<Response> {
     if (route === 'logout') return json({ ok: true }, 200, { 'set-cookie': clearCookie });
     if (route === 'session') return json({ authed: isAuthed(req), storage: storageMode() });
 
+    // ---- Face ID / passkey sign-in (public) ----
+    if (route === 'passkey/available') return json({ available: await passkeys.hasPasskeys() });
+    if (route === 'passkey/login-options' && req.method === 'POST') {
+      const options = await passkeys.authenticationOptions(req);
+      if (!options) return json({ error: 'No passkeys registered' }, 404);
+      return json(options);
+    }
+    if (route === 'passkey/login-verify' && req.method === 'POST') {
+      const { response } = (await req.json()) as { response: unknown };
+      const ok = await passkeys.verifyAuthentication(req, response).catch((e) => { console.error(e); return false; });
+      if (!ok) return json({ error: 'Face ID could not be verified. Try again.' }, 401);
+      return json({ ok: true }, 200, { 'set-cookie': sessionCookie(secure) });
+    }
+
+    // ---- daily morning briefing (Vercel Cron, ~08:00 IST) ----
+    if (route === 'cron/morning') {
+      const secret = process.env.CRON_SECRET;
+      if (!secret || req.headers.get('authorization') !== `Bearer ${secret}`) return json({ error: 'Unauthorized' }, 401);
+      const msg = await composeBriefing();
+      if (url.searchParams.get('dry') === '1') return json(msg);
+      const result = await push.pushToAll(msg);
+      return json({ ...result, counts: msg.counts });
+    }
+
     // Blob upload-completed callbacks are signed by Vercel, not cookie-authed.
     if (route === 'upload' && req.method === 'POST') {
       const body = await req.json();
@@ -117,6 +150,39 @@ export async function handle(req: Request): Promise<Response> {
         },
       });
     }
+
+    // ---- passkey management ----
+    if (route === 'passkey/register-options' && req.method === 'POST') return json(await passkeys.registrationOptions(req));
+    if (route === 'passkey/register-verify' && req.method === 'POST') {
+      const { response } = (await req.json()) as { response: unknown };
+      const ok = await passkeys.verifyRegistration(req, response, device(req)).catch((e) => { console.error(e); return false; });
+      return json(ok ? { ok: true } : { error: 'Could not verify this device' }, ok ? 200 : 400);
+    }
+    if (route === 'passkey/list') return json(await passkeys.listPasskeys());
+    if (route === 'passkey/delete' && req.method === 'POST') {
+      const { id } = (await req.json()) as { id: string };
+      await passkeys.deletePasskey(String(id));
+      return json({ ok: true });
+    }
+
+    // ---- push notifications ----
+    if (route === 'push/status') return json({ configured: !!push.vapidPublicKey(), key: push.vapidPublicKey(), devices: await push.countSubscriptions() });
+    if (route === 'push/subscribe' && req.method === 'POST') {
+      const { subscription } = (await req.json()) as { subscription: push.Sub };
+      await push.saveSubscription(subscription, device(req));
+      return json({ ok: true });
+    }
+    if (route === 'push/unsubscribe' && req.method === 'POST') {
+      const { endpoint } = (await req.json()) as { endpoint: string };
+      await push.removeSubscription(String(endpoint));
+      return json({ ok: true });
+    }
+    if (route === 'push/test' && req.method === 'POST') {
+      const { endpoint } = (await req.json().catch(() => ({}))) as { endpoint?: string };
+      const msg = await composeBriefing();
+      return json(await push.pushToAll(msg, endpoint));
+    }
+    if (route === 'briefing/preview') return json(await composeBriefing());
 
     if (route === 'file-delete' && req.method === 'POST') {
       const { path } = (await req.json()) as { path: string };

@@ -7,7 +7,7 @@ import { TodoItem } from '../components/TodoItem';
 import { TodoEditor } from '../components/TodoEditor';
 import { NoteEditor } from '../components/NoteEditor';
 import { NoteRow } from '../tabs/NotesTab';
-import { Empty, Section } from '../components/ui';
+import { Empty, PageHeader, Section } from '../components/ui';
 
 function MoveTo({ onPick }: { onPick: (boardId: string) => void }) {
   const boards = useStore((s) => s.db.boards).filter((b) => !b.archived).sort((a, b) => a.position - b.position);
@@ -35,10 +35,9 @@ export default function Inbox() {
 
   return (
     <div>
-      <h1 className="text-[26px] font-semibold tracking-tight">Inbox</h1>
-      <p className="mb-5 text-sm text-mute">Quick captures waiting for a home.</p>
+      <PageHeader compact="Inbox" title="Inbox" eyebrow={`${todos.length + notes.length} waiting`} subtitle="Quick captures waiting for a home." />
       {!todos.length && !notes.length ? (
-        <Empty icon={<InboxIcon size={22} />} title="Inbox zero" hint="Anything you capture with + without choosing a board lands here." />
+        <Empty icon={<InboxIcon size={22} />} title="Inbox zero ✨" hint="Anything you capture with + without choosing a board lands here." />
       ) : (
         <>
           {todos.length > 0 && (

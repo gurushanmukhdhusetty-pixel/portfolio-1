@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { BookMarked, ChevronDown, Pencil, Plus, Trash2 } from 'lucide-react';
+import { BookMarked, ChevronDown, Pencil, Plus, Timer, Trash2 } from 'lucide-react';
+import { startOfWeek } from 'date-fns';
+import { fmtMinutes } from '../lib/focus';
 import { useStore } from '../lib/store';
 import { removeWithUndo, toast } from '../lib/toast';
 import { componentResult, courseResult, fmtScore, parseScore, type CourseResult } from '../lib/grades';
@@ -81,6 +83,10 @@ function CourseCard({ course, color }: { course: Course; color: string }) {
   const s = useStore();
   const comps = s.db.grade_components.filter((c) => c.course_id === course.id).sort((a, b) => a.position - b.position);
   const r = courseResult(comps, Number(course.target));
+  const sessions = s.db.focus_sessions.filter((f) => f.course_id === course.id);
+  const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 }).toISOString();
+  const focusWeek = sessions.filter((f) => f.started_at >= weekStart).reduce((n, f) => n + f.minutes, 0);
+  const focusAll = sessions.reduce((n, f) => n + f.minutes, 0);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<GradeComponent | 'new' | null>(null);
   const [editCourse, setEditCourse] = useState(false);
@@ -98,10 +104,10 @@ function CourseCard({ course, color }: { course: Course; color: string }) {
       <button className="flex w-full items-center gap-3 p-4 text-left" onClick={() => setOpen(!open)}>
         <div className="min-w-0 flex-1">
           <div className="truncate font-medium">{course.name}</div>
-          <div className="text-xs text-mute">{course.code ? `${course.code} · ` : ''}Target {Number(course.target)}%</div>
+          <div className="text-xs text-mute">{course.code ? `${course.code} · ` : ''}Target {Number(course.target)}%{focusWeek + focusAll > 0 && <span className="ml-1.5 inline-flex items-center gap-0.5 text-violet-500"><Timer size={11} />{fmtMinutes(focusWeek)} this week</span>}</div>
         </div>
         <div className="text-right">
-          <div className="text-2xl font-semibold tabular-nums" style={{ color: r.current === null ? 'var(--faint)' : color }}>{r.current === null ? '–' : `${r.current.toFixed(1)}%`}</div>
+          <div className="display text-[32px] leading-none tnum" style={{ color: r.current === null ? 'var(--faint)' : color }}>{r.current === null ? '–' : `${r.current.toFixed(1)}%`}</div>
           <div className="text-[10px] uppercase tracking-wide text-faint">current</div>
         </div>
         <ChevronDown size={18} className={cx('text-faint transition', open && 'rotate-180')} />

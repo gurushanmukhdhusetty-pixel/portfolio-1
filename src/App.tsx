@@ -10,6 +10,9 @@ import Inbox from './pages/Inbox';
 import Search from './pages/Search';
 import Boards from './pages/Boards';
 import BoardPage from './pages/BoardPage';
+import Focus from './pages/Focus';
+import Settings from './pages/Settings';
+import { AnimatedLogo } from './components/Logo';
 
 export default function App() {
   const authed = useStore((s) => s.authed);
@@ -23,7 +26,7 @@ export default function App() {
   if (authed === null || (authed && !loaded)) {
     return (
       <div className="grid min-h-dvh place-items-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-line border-t-[var(--accent)]" />
+        <AnimatedLogo size={56} className="breathe text-ink" />
       </div>
     );
   }
@@ -38,6 +41,8 @@ export default function App() {
         <Route path="search" element={<Search />} />
         <Route path="boards" element={<Boards />} />
         <Route path="b/:id" element={<BoardPage />} />
+        <Route path="focus" element={<Focus />} />
+        <Route path="settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>

@@ -2,7 +2,7 @@
 // mutate endpoint only accepts table/column names listed here (no SQL injection).
 // Every table also gets: id uuid pk, created_at, updated_at.
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 3;
 
 export const TABLES = {
   boards: {
@@ -122,6 +122,15 @@ export const TABLES = {
     habit_id: 'uuid not null references habits on delete cascade',
     day: 'date not null',
   },
+  // v2: study timer. One row per completed (or stopped-early) focus session.
+  focus_sessions: {
+    todo_id: 'uuid references todos on delete set null',
+    board_id: 'uuid references boards on delete set null',
+    course_id: 'uuid references courses on delete set null',
+    label: "text not null default ''",
+    started_at: 'timestamptz not null',
+    minutes: 'int not null check (minutes > 0 and minutes <= 600)',
+  },
 } as const;
 
 export type TableName = keyof typeof TABLES;
@@ -151,6 +160,27 @@ export function ddl(): string[] {
     `create index if not exists todos_due on todos (due_date) where status <> 'done'`,
     `create index if not exists notes_board on notes (board_id)`,
     `create index if not exists files_board on files (board_id)`,
+    `create index if not exists focus_started on focus_sessions (started_at)`,
+    // internal tables (never exposed through snapshot/mutate)
+    `create table if not exists _login_failures (at timestamptz not null default now())`,
+    `create table if not exists _passkeys (
+        id text primary key,
+        public_key text not null,
+        counter bigint not null default 0,
+        transports text,
+        device text,
+        created_at timestamptz not null default now(),
+        last_used_at timestamptz
+      )`,
+    // single-use WebAuthn challenges (deleted the moment they are used)
+    `create table if not exists _challenges (challenge text primary key, created_at timestamptz not null default now())`,
+    `create table if not exists _push_subscriptions (
+        endpoint text primary key,
+        p256dh text not null,
+        auth text not null,
+        device text,
+        created_at timestamptz not null default now()
+      )`,
   );
   return out;
 }

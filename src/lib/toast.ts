@@ -26,4 +26,7 @@ export function removeWithUndo(table: Table, id: string, label = 'Deleted') {
   toast(label, { label: 'Undo', run: undo });
 }
 
-export const haptic = () => { try { navigator.vibrate?.(8); } catch { /* unsupported */ } };
+export const haptic = () => {
+  // browsers only allow vibration after the user has interacted with the page
+  try { if ((navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation?.hasBeenActive !== false) navigator.vibrate?.(8); } catch { /* unsupported */ }
+};

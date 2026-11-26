@@ -20,7 +20,9 @@ function devApi(): Plugin {
         });
         const response: Response = await handle(request);
         res.statusCode = response.status;
-        response.headers.forEach((v, k) => res.setHeader(k, v));
+        response.headers.forEach((v, k) => { if (k !== 'set-cookie') res.setHeader(k, v); });
+        const cookies = response.headers.getSetCookie();
+        if (cookies.length) res.setHeader('set-cookie', cookies);
         res.end(Buffer.from(await response.arrayBuffer()));
       });
     },
@@ -36,7 +38,7 @@ export default defineConfig(({ mode }) => {
       devApi(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.svg', 'favicon-48.png', 'icon.svg', 'apple-touch-icon.png'],
+        includeAssets: ['favicon.svg', 'favicon-48.png', 'icon.svg', 'apple-touch-icon.png', 'badge-96.png'],
         manifest: {
           name: 'Life OS',
           short_name: 'Life OS',
@@ -54,7 +56,11 @@ export default defineConfig(({ mode }) => {
         workbox: {
           globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
           navigateFallbackDenylist: [/^\/api/],
-          runtimeCaching: [],
+          importScripts: ['push-sw.js'], // push + notification click handlers
+          runtimeCaching: [
+            { urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i, handler: 'StaleWhileRevalidate', options: { cacheName: 'google-fonts-css' } },
+            { urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i, handler: 'CacheFirst', options: { cacheName: 'google-fonts', expiration: { maxEntries: 30, maxAgeSeconds: 60 * 60 * 24 * 365 }, cacheableResponse: { statuses: [0, 200] } } },
+          ],
         },
       }),
     ],

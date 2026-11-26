@@ -27,6 +27,7 @@ const DEFAULTS: { [T in Table]: Partial<Row<T>> } = {
   people: { relation: null, birth_month: null, birth_day: null, birth_year: null },
   habits: { archived: false, position: 0 },
   habit_logs: {},
+  focus_sessions: { todo_id: null, board_id: null, course_id: null, label: '' },
 };
 
 // child table -> [foreign key, parent table, on delete]
@@ -41,10 +42,11 @@ const RELATIONS: [Table, string, Table, 'cascade' | 'null'][] = [
   ['grade_components', 'course_id', 'courses', 'cascade'], ['assessments', 'course_id', 'courses', 'cascade'],
   ['content_claims', 'piece_id', 'content_pieces', 'cascade'], ['notes', 'person_id', 'people', 'cascade'],
   ['habit_logs', 'habit_id', 'habits', 'cascade'],
+  ['focus_sessions', 'todo_id', 'todos', 'null'], ['focus_sessions', 'board_id', 'boards', 'null'], ['focus_sessions', 'course_id', 'courses', 'null'],
 ];
 
 // parents before children, matching the server's foreign keys
-const RESTORE_ORDER: Table[] = ['boards', 'people', 'notes', 'checklists', 'checklist_items', 'goals', 'todos', 'files', 'courses', 'grade_components', 'assessments', 'content_pieces', 'content_claims', 'habits', 'habit_logs'];
+const RESTORE_ORDER: Table[] = ['boards', 'people', 'notes', 'checklists', 'checklist_items', 'goals', 'todos', 'files', 'courses', 'grade_components', 'assessments', 'content_pieces', 'content_claims', 'habits', 'habit_logs', 'focus_sessions'];
 
 function applyOp(db: DB, op: Op): DB {
   const next = { ...db } as Record<Table, any[]>;

@@ -29,18 +29,19 @@ export interface ContentClaim extends Base { piece_id: ID; claim: string; number
 export interface Person extends Base { board_id: ID; name: string; relation: string | null; birth_month: number | null; birth_day: number | null; birth_year: number | null }
 export interface Habit extends Base { board_id: ID; name: string; archived: boolean; position: number }
 export interface HabitLog extends Base { habit_id: ID; day: string }
+export interface FocusSession extends Base { todo_id: ID | null; board_id: ID | null; course_id: ID | null; label: string; started_at: string; minutes: number }
 
 export interface DB {
   boards: Board[]; notes: Note[]; checklists: Checklist[]; checklist_items: ChecklistItem[];
   goals: Goal[]; todos: Todo[]; files: FileRow[]; courses: Course[]; grade_components: GradeComponent[];
   assessments: Assessment[]; content_pieces: ContentPiece[]; content_claims: ContentClaim[];
-  people: Person[]; habits: Habit[]; habit_logs: HabitLog[];
+  people: Person[]; habits: Habit[]; habit_logs: HabitLog[]; focus_sessions: FocusSession[];
 }
 export type Table = keyof DB;
 export type Row<T extends Table> = DB[T][number];
 
 export const TABLES: Table[] = [
   'boards', 'notes', 'checklists', 'checklist_items', 'goals', 'todos', 'files', 'courses',
-  'grade_components', 'assessments', 'content_pieces', 'content_claims', 'people', 'habits', 'habit_logs',
+  'grade_components', 'assessments', 'content_pieces', 'content_claims', 'people', 'habits', 'habit_logs', 'focus_sessions',
 ];
 export const emptyDB = (): DB => Object.fromEntries(TABLES.map((t) => [t, []])) as unknown as DB;

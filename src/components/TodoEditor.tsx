@@ -1,5 +1,7 @@
 import { useRef, useState } from 'react';
-import { FileText, Link2, Paperclip, Plus, Star, Trash2, Upload, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { FileText, Link2, Paperclip, Plus, Star, Timer, Trash2, Upload, X } from 'lucide-react';
+import { useFocus } from '../lib/focus';
 import { useStore } from '../lib/store';
 import { removeWithUndo, toast } from '../lib/toast';
 import { toggleTodo, toggleTop3 } from '../lib/todos';
@@ -10,6 +12,7 @@ import { CheckBox, Field, Segmented, Sheet, priorityColor } from './ui';
 
 export function TodoEditor({ id, onClose }: { id: string | null; onClose: () => void }) {
   const s = useStore();
+  const nav = useNavigate();
   const todo = s.db.todos.find((t) => t.id === id);
   const [sub, setSub] = useState('');
   const [busy, setBusy] = useState(false);
@@ -34,8 +37,18 @@ export function TodoEditor({ id, onClose }: { id: string | null; onClose: () => 
     <Sheet open onClose={onClose} wide
       title={<div className="flex items-center gap-2"><span className="h-2.5 w-2.5 rounded-full" style={{ background: board?.color ?? 'var(--faint)' }} />{board?.name ?? 'Inbox'}</div>}
       footer={<div className="flex items-center gap-2">
-        <button className="btn-ghost text-red-500" onClick={() => { removeWithUndo('todos', todo.id, 'To-do deleted'); onClose(); }}><Trash2 size={16} /> Delete</button>
+        <button className="btn-ghost px-2.5 text-red-500" onClick={() => { removeWithUndo('todos', todo.id, 'To-do deleted'); onClose(); }} aria-label="Delete"><Trash2 size={16} /><span className="hidden sm:inline">Delete</span></button>
         <div className="flex-1" />
+        {todo.status !== 'done' && (
+          <button className="btn-ghost px-2.5" onClick={() => {
+            const last = s.db.focus_sessions.filter((f) => f.todo_id === todo.id).sort((a, b) => b.started_at.localeCompare(a.started_at))[0];
+            const f = useFocus.getState();
+            f.setTarget({ todoId: todo.id, boardId: todo.board_id, courseId: last?.course_id ?? null, label: todo.title });
+            if (f.phase === 'idle') f.start();
+            onClose();
+            nav('/focus');
+          }}><Timer size={16} /> Focus</button>
+        )}
         {!todo.parent_id && (
           <button className={cx('btn-ghost', !!todo.top3 && 'text-amber-400')} onClick={() => { if (!toggleTop3(todo)) toast('Top 3 is full. Unpin one first.'); }}>
             <Star size={16} fill={todo.top3 ? 'currentColor' : 'none'} /> {todo.top3 ? 'In Top 3' : 'Top 3'}

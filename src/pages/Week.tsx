@@ -6,6 +6,7 @@ import { useStore } from '../lib/store';
 import { sortTodos } from '../lib/todos';
 import { nextBirthday, todayISO, toISO, cx } from '../lib/utils';
 import { TodoItem } from '../components/TodoItem';
+import { PageHeader } from '../components/ui';
 import { TodoEditor } from '../components/TodoEditor';
 
 export default function Week() {
@@ -33,30 +34,31 @@ export default function Week() {
   });
   const count = (x: (typeof dayData)[number]) => x.todos.length + x.assess.length + x.goals.length + x.bdays.length;
   const total = dayData.reduce((n, x) => n + count(x), 0);
+  const maxLoad = Math.max(...dayData.map(count));
 
   return (
     <div>
-      <div className="mb-4 flex items-end gap-2">
-        <div className="flex-1">
-          <h1 className="text-[26px] font-semibold tracking-tight">{offset === 0 ? 'This week' : offset === 1 ? 'Next week' : `${format(days[0], 'd MMM')} – ${format(days[6], 'd MMM')}`}</h1>
-          <div className="text-sm text-mute">{total} {total === 1 ? 'thing' : 'things'} scheduled{overdue.length ? ` · ${overdue.length} overdue` : ''}</div>
-        </div>
-        <button className="btn-ghost p-2" disabled={offset === 0} onClick={() => setOffset(offset - 1)} aria-label="Previous week"><ChevronLeft size={18} /></button>
-        <button className="btn-ghost p-2" onClick={() => setOffset(offset + 1)} aria-label="Next week"><ChevronRight size={18} /></button>
-      </div>
+      <PageHeader compact="Week" eyebrow={`${format(days[0], 'd MMM')} – ${format(days[6], 'd MMM')}`}
+        title={offset === 0 ? 'This week' : offset === 1 ? 'Next week' : `In ${offset} weeks`}
+        subtitle={`${total} ${total === 1 ? 'thing' : 'things'} scheduled${overdue.length ? ` · ${overdue.length} overdue` : ''}`}
+        right={<div className="mb-1 flex gap-1">
+          <button className="btn-soft h-10 w-10 rounded-full p-0" disabled={offset === 0} onClick={() => setOffset(offset - 1)} aria-label="Previous week"><ChevronLeft size={18} /></button>
+          <button className="btn-soft h-10 w-10 rounded-full p-0" onClick={() => setOffset(offset + 1)} aria-label="Next week"><ChevronRight size={18} /></button>
+        </div>} />
 
-      {/* day strip */}
-      <div className="mb-6 grid grid-cols-7 gap-1.5">
+      {/* day strip: height of the bar = how loaded the day is */}
+      <div className="rise mb-7 grid grid-cols-7 gap-1.5">
         {dayData.map((x) => {
           const n = count(x);
+          const today = isToday(x.d);
           return (
             <a key={x.iso} href={`#d-${x.iso}`} onClick={(e) => { e.preventDefault(); document.getElementById(`d-${x.iso}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
-              className={cx('flex flex-col items-center rounded-2xl py-2 transition', isToday(x.d) ? 'text-white shadow-lg' : 'card hover:shadow-md')}
-              style={isToday(x.d) ? { background: 'var(--accent)' } : undefined}>
-              <span className={cx('text-[10px] font-medium uppercase', isToday(x.d) ? 'text-white/80' : 'text-mute')}>{format(x.d, 'EEE')}</span>
-              <span className="text-lg font-semibold">{format(x.d, 'd')}</span>
-              <span className="flex h-1.5 gap-0.5">
-                {Array.from({ length: Math.min(n, 4) }).map((_, i) => <span key={i} className={cx('h-1 w-1 rounded-full', isToday(x.d) ? 'bg-white' : 'bg-[var(--accent)]')} />)}
+              className={cx('relative flex flex-col items-center overflow-hidden rounded-[18px] pt-2 pb-2.5 transition active:scale-95', today ? 'text-white' : 'card hover:shadow-md')}
+              style={today ? { background: 'linear-gradient(180deg, color-mix(in srgb, var(--accent) 85%, white), var(--accent))', boxShadow: '0 10px 24px -10px var(--accent)' } : undefined}>
+              <span className={cx('text-[10px] font-semibold uppercase tracking-wide', today ? 'text-white/80' : 'text-mute')}>{format(x.d, 'EEEEE')}</span>
+              <span className="display text-[24px] leading-tight tnum">{format(x.d, 'd')}</span>
+              <span className={cx('mt-1 h-1 w-6 overflow-hidden rounded-full', today ? 'bg-white/25' : 'bg-panel2')}>
+                <span className={cx('block h-full rounded-full transition-all duration-700', today ? 'bg-white' : 'bg-[var(--accent)]')} style={{ width: `${Math.min(100, (n / Math.max(4, maxLoad)) * 100)}%` }} />
               </span>
             </a>
           );
@@ -70,16 +72,16 @@ export default function Week() {
         </div>
       )}
 
-      <div className="relative space-y-5 before:absolute before:top-2 before:bottom-2 before:left-[7px] before:w-px before:bg-line">
+      <div className="relative space-y-6 before:absolute before:top-2 before:bottom-2 before:left-[7px] before:w-px before:bg-line">
         {dayData.map((x) => (
           <div key={x.iso} id={`d-${x.iso}`} className="relative scroll-mt-28 pl-7">
             <span className={cx('absolute top-1.5 left-0 h-[15px] w-[15px] rounded-full border-[3px] border-bg', count(x) ? 'bg-[var(--accent)]' : 'bg-line')} />
             <div className="mb-1.5 flex items-baseline gap-2">
-              <span className="font-semibold">{isToday(x.d) ? 'Today' : isTomorrow(x.d) ? 'Tomorrow' : format(x.d, 'EEEE')}</span>
+              <span className="display text-[22px]">{isToday(x.d) ? 'Today' : isTomorrow(x.d) ? 'Tomorrow' : format(x.d, 'EEEE')}</span>
               <span className="text-xs text-mute">{format(x.d, 'd MMM')}</span>
             </div>
             {count(x) === 0 ? (
-              <div className="text-sm text-faint">Free</div>
+              <div className="text-sm text-faint italic">Free. Protect it.</div>
             ) : (
               <div className="card divide-y divide-line overflow-hidden">
                 {x.assess.map((a) => (
