@@ -62,7 +62,7 @@ export default function BoardPage() {
         <button className="btn-ghost p-2" onClick={() => setEditing(true)} aria-label="Edit board"><Pencil size={16} /></button>
       </div>
 
-      <div className="sticky top-[calc(max(env(safe-area-inset-top),10px)+46px)] z-20 -mx-4 mb-4 bg-bg/80 px-4 py-2 backdrop-blur-xl md:top-0 md:-mx-8 md:px-8">
+      <div className="sticky top-[var(--topbar-h,56px)] z-20 -mx-4 mb-4 bg-bg/95 px-4 py-2 backdrop-blur-xl md:top-0 md:-mx-8 md:px-8">
         <div className="flex gap-1 overflow-x-auto scrollbar-none">
           {tabs.map((t) => (
             <button key={t.key} onClick={() => setParams({ tab: t.key }, { replace: true })}

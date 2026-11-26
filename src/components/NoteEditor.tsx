@@ -3,7 +3,7 @@ import { format, parseISO } from 'date-fns';
 import { useStore } from '../lib/store';
 import { removeWithUndo } from '../lib/toast';
 import { cx } from '../lib/utils';
-import { RichText } from './RichText';
+import { RichText } from './LazyRichText';
 import { Sheet } from './ui';
 
 export function NoteEditor({ id, onClose }: { id: string | null; onClose: () => void }) {

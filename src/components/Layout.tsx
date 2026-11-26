@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation, useMatch, useNavigate } from 'react-router-dom';
 import { CalendarDays, Inbox, LayoutGrid, LogOut, Moon, Plus, Search, Settings2, Sun, Sunrise } from 'lucide-react';
 import { useStore } from '../lib/store';
@@ -47,6 +47,15 @@ export default function Layout() {
   const { dark, toggle } = useTheme();
   const loc = useLocation();
   const navigate = useNavigate();
+  const topbar = useRef<HTMLDivElement>(null);
+  // expose the phone top bar's real height so sticky sub-headers sit flush under it
+  useEffect(() => {
+    const el = topbar.current;
+    if (!el) return;
+    const ro = new ResizeObserver(() => document.documentElement.style.setProperty('--topbar-h', `${el.offsetHeight}px`));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => { document.documentElement.style.setProperty('--accent', accent); }, [accent]);
   useEffect(() => { window.scrollTo(0, 0); }, [loc.pathname]);
@@ -110,7 +119,7 @@ export default function Layout() {
 
       <main className="glow relative min-w-0 flex-1">
         {/* Mobile top bar */}
-        <div className="sticky top-0 z-30 flex items-center gap-2 border-b border-line/60 bg-bg/75 px-4 pt-[max(env(safe-area-inset-top),10px)] pb-2.5 backdrop-blur-xl md:hidden">
+        <div ref={topbar} className="sticky top-0 z-30 flex items-center gap-2 border-b border-line/60 bg-bg/95 px-4 pt-[max(env(safe-area-inset-top),10px)] pb-2.5 backdrop-blur-xl md:hidden">
           <Logo size={24} />
           <div className="flex-1 font-semibold tracking-tight">Life OS</div>
           <SyncDot />
