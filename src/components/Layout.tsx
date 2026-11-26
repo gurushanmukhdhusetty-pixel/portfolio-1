@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { NavLink, Outlet, useLocation, useMatch } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, useMatch, useNavigate } from 'react-router-dom';
 import { CalendarDays, Inbox, LayoutGrid, LogOut, Moon, Plus, Search, Settings2, Sun, Sunrise } from 'lucide-react';
 import { useStore } from '../lib/store';
 import { boardIcon } from '../lib/icons';
@@ -46,19 +46,20 @@ export default function Layout() {
   const [capture, setCapture] = useState(false);
   const { dark, toggle } = useTheme();
   const loc = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => { document.documentElement.style.setProperty('--accent', accent); }, [accent]);
   useEffect(() => { window.scrollTo(0, 0); }, [loc.pathname]);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
-      if (e.key === 'n' && !e.metaKey && !e.ctrlKey && !['INPUT', 'TEXTAREA'].includes(tag) && !(e.target as HTMLElement).isContentEditable) {
-        e.preventDefault(); setCapture(true);
-      }
+      if (e.metaKey || e.ctrlKey || e.altKey || ['INPUT', 'TEXTAREA', 'SELECT'].includes(tag) || (e.target as HTMLElement).isContentEditable) return;
+      if (e.key === 'n') { e.preventDefault(); setCapture(true); }
+      if (e.key === '/') { e.preventDefault(); navigate('/search'); }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
+  }, [navigate]);
 
   const nav = [
     { to: '/', icon: Sunrise, label: 'Today', end: true },
@@ -118,7 +119,6 @@ export default function Layout() {
             {!!inboxCount && <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-[var(--accent)]" />}
           </NavLink>
           <button className="btn-ghost p-2" onClick={toggle} aria-label="Toggle theme">{dark ? <Sun size={18} /> : <Moon size={18} />}</button>
-          <button className="btn-ghost p-2" onClick={logout} aria-label="Log out"><LogOut size={18} /></button>
         </div>
 
         <div className="mx-auto max-w-4xl px-4 pt-4 pb-32 md:px-8 md:pt-8">

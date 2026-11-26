@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Archive, ArchiveRestore, ChevronDown, ChevronUp, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useStore } from '../lib/store';
+import { api } from '../lib/api';
 import { removeWithUndo, toast } from '../lib/toast';
 import { boardIcon, BOARD_ICONS, COLORS } from '../lib/icons';
 import type { Board, BoardKind } from '../lib/types';
@@ -143,6 +144,11 @@ export default function Boards() {
           </div>
         </Section>
       )}
+
+      <div className="mt-10 flex items-center justify-center gap-2 text-xs text-faint md:hidden">
+        <span>Life OS</span><span>·</span>
+        <button className="underline-offset-2 hover:text-ink hover:underline" onClick={async () => { await useStore.getState().flush(); await api.logout(); location.reload(); }}>Log out</button>
+      </div>
 
       {editing && <BoardEditor key={editing === 'new' ? 'new' : editing.id} board={editing === 'new' ? null : editing} open onClose={() => setEditing(null)} />}
     </div>

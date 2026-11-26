@@ -8,9 +8,11 @@ interface T { toasts: Toast[]; show(text: string, action?: Toast['action'], ms?:
 let n = 0;
 export const useToasts = create<T>((set, get) => ({
   toasts: [],
-  show(text, action, ms = 4500) {
+  show(text, action, ms) {
     const id = ++n;
-    set((s) => ({ toasts: [...s.toasts.slice(-2), { id, text, action }] }));
+    // one toast at a time: newest replaces older ones; undo toasts linger longer
+    set({ toasts: [{ id, text, action }] });
+    ms ??= action ? 5000 : 2200;
     setTimeout(() => get().dismiss(id), ms);
   },
   dismiss(id) { set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })); },
