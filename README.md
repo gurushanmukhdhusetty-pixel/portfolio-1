@@ -47,11 +47,12 @@ Without `BLOB_READ_WRITE_TOKEN`, uploads are saved to `./.local-files`.
 
 ## Deploying changes
 
-```bash
-npx vercel deploy --prod
-```
+Automatic. The `life-os` Vercel project is connected to this repo:
 
-To deploy automatically on every push, connect this repo to the `life-os` project under Vercel → Settings → Git.
+- Push to `ccr-854260a8-axjmuj` (the current production branch) → the live site updates in about a minute.
+- Push any other branch → you get a preview deployment with its own URL.
+
+To make `main` the production branch later: Vercel → `life-os` → Settings → Git → Production Branch.
 
 ## Stack
 
