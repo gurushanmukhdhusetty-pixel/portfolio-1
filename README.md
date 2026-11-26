@@ -1,0 +1,67 @@
+# Life OS
+
+A personal life manager for one person: boards for each part of life, with notes, checklists, to-dos and files on each one, plus Today, Week, Inbox and Search views. It works on a phone first and installs to the home screen.
+
+**Live:** https://life-os-blond-one-20.vercel.app (password only, no username)
+
+## What's already set up (nothing for you to do)
+
+| Piece | Where | Notes |
+|---|---|---|
+| App + API | Vercel project `life-os` (Singapore) | Static React app plus one serverless function at `/api` |
+| Database | Neon Postgres `life-os-db` (free plan, Singapore) | Linked through the Neon integration on your Vercel account |
+| Files | Vercel Blob `life-os-private` (private store) | Files are only served after you log in |
+| Password | `APP_PASSWORD` env var (sensitive) | Never in the code or git |
+| Session signing | `SESSION_SECRET` env var (sensitive) | Random 32 bytes |
+
+The database schema creates itself on first use. There are no migrations to run.
+
+## Install on your phone
+
+- **iPhone (Safari):** open the link → Share → *Add to Home Screen*.
+- **Android (Chrome):** open the link → ⋮ menu → *Install app*.
+
+Login lasts 180 days per device.
+
+## Why it won't hit rate limits
+
+- **One request loads everything.** On open, the app fetches all your data in a single query and caches it on the device (IndexedDB).
+- **Reads are free.** Switching boards, searching and the Today/Week views run entirely on the device.
+- **Writes are batched.** Edits apply instantly on screen and are sent together in one request a moment later. Typing in a note does not send a request per keystroke.
+- **Refresh is throttled.** The app re-syncs when it comes back into focus, at most every 2 minutes.
+- **It works offline.** Changes queue on the device and send when you're back online.
+
+## Changing the password
+
+Vercel → `life-os` project → Settings → Environment Variables → edit `APP_PASSWORD` → redeploy. Changing it signs out every device. After 10 wrong attempts in 15 minutes, login locks for 15 minutes.
+
+## Local development
+
+```bash
+npm install
+cp .env.example .env.local   # set APP_PASSWORD and a local DATABASE_URL
+npm run dev                  # http://localhost:5173 (the /api routes run inside Vite)
+```
+
+Without `BLOB_READ_WRITE_TOKEN`, uploads are saved to `./.local-files`.
+
+## Deploying changes
+
+```bash
+npx vercel deploy --prod
+```
+
+To deploy automatically on every push, connect this repo to the `life-os` project under Vercel → Settings → Git.
+
+## Stack
+
+Vite, React 19, TypeScript, Tailwind v4, Zustand (local-first store), TipTap (rich text), dnd-kit (kanban), Neon serverless Postgres, Vercel Blob, Vercel Functions, vite-plugin-pwa.
+
+## Code map
+
+- `server/schema.ts`: the data model (single source of truth; the DDL is generated from it)
+- `server/api.ts`: every API route (login, snapshot, batched mutate, files)
+- `src/lib/store.ts`: local-first store, write queue, undo
+- `src/lib/grades.ts`: grade calculator (best-of-N, what you need on the remaining components)
+- `src/pages/*`: Today, Week, Inbox, Search, Boards
+- `src/tabs/*`: board tabs (to-dos, notes, checklists, files, goals, grades, assessments, pipeline, people, habits)
