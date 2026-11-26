@@ -3,7 +3,7 @@
   "framework": "vite",
   "regions": ["sin1"],
   "rewrites": [
-    { "source": "/api/:path*", "destination": "/api?route=:path*" },
+    { "source": "/api/:route*", "destination": "/api?route=:route*" },
     { "source": "/((?!api|assets|.*\\..*).*)", "destination": "/index.html" }
   ],
   "headers": [
